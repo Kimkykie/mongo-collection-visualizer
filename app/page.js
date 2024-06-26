@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import FlowContainer from './flow-container';
+
 
 export default function Home() {
   const [mongoURI, setMongoURI] = useState('');
@@ -53,9 +55,10 @@ export default function Home() {
       {data && (
         <div>
           <h2>Collections and Relationships</h2>
-          <pre>{JSON.stringify(data, null, 2)}</pre>
+          <FlowContainer collections={data.collections} />
         </div>
       )}
+
     </div>
   );
 }
