@@ -20,10 +20,8 @@ const RenderField = ({ field, value }) => {
         if (objectKeys.length > 0) {
             return (
                 <div className="flex space-x-2">
-                    <div className='w-1/5'>
                         {getIcon(field, value)}
-                    </div>
-                    <div className='w-3/5'>
+                    <div className='w-2/5'>
                         <strong onClick={() => setIsOpen(!isOpen)} style={{ cursor: 'pointer' }}>
                             {field}: {isOpen ? '▼' : '▶'}
                         </strong>
@@ -46,13 +44,11 @@ const RenderField = ({ field, value }) => {
     }
     return (
         <div className="flex space-x-2">
-            <div className='w-1/5'>
                 {getIcon(field, value)}
-            </div>
             <div className='w-3/5'>
                 <strong>{field}</strong>
             </div>
-            <div className='w-1/5'>
+            <div className='w-2/5'>
                 <span>{String(value)}</span>
             </div>
         </div>
@@ -61,7 +57,7 @@ const RenderField = ({ field, value }) => {
 
 const CustomNode = ({ data }) => {
     return (
-        <div className='w-96'>
+        <div className='w-64'>
             <div className='bg-teal-400 p-2 rounded-t-md text-center'>
                 <p className='text-sm font-semibold'>{data.label}</p>
             </div>

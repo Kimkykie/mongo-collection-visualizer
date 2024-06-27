@@ -1,14 +1,15 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import FlowContainer from './flow-container';
+import { Data } from './flow-container/types'
 
 
 export default function Home() {
-  const [mongoURI, setMongoURI] = useState('');
-  const [data, setData] = useState(null);
+  const [mongoURI, setMongoURI] = useState<string>('');
+  const [data, setData] = useState<Data | null>(null);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const response = await fetch('/api/connect', {
       method: 'POST',
@@ -17,7 +18,7 @@ export default function Home() {
       },
       body: JSON.stringify({ mongoURI })
     });
-    const result = await response.json();
+    const result: Data = await response.json();
     setData(result);
   };
 
