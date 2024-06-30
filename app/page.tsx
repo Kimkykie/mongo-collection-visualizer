@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, FormEvent } from 'react';
-import FlowContainer from './flow-container';
+import FlowContainer from './flow-container/index';
 import { Data } from './flow-container/types'
 
 
@@ -23,7 +23,7 @@ export default function Home() {
   };
 
   return (
-    <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+    <div className="mx-auto sm:px-6 lg:px-8">
       <h1 className='mt-4 text-4xl mb-4 font-bold'>MongoDB Connection</h1>
       <div>
         <label htmlFor="mongoURI" className="block text-sm font-medium text-gray-700 mr-2">

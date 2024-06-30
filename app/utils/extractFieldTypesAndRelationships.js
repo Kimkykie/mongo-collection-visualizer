@@ -51,8 +51,11 @@ const extractFieldTypesAndRelationships = (collections) => {
                       name !== collection.name && name.endsWith('s') && name.slice(0, -1) === fieldName
                   );
                   relationships.push({
-                      field: fieldName,
-                      reference: potentialReference || 'Unknown (requires additional context or AI inference)'
+                      source: collection.name,
+                      sourceKey: "_id",
+                      target: potentialReference,
+                      targetKey: fieldName,
+                      reference: potentialReference || null
                   });
               }
           } else {

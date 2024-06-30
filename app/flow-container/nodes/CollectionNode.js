@@ -58,7 +58,7 @@ const RenderField = ({ field, value }) => {
 const CustomNode = ({ data }) => {
     return (
         <div className='w-64'>
-            <div className='bg-teal-400 p-2 rounded-t-md text-center'>
+            <div className='bg-green-600 p-2 rounded-t-md text-center text-white'>
                 <p className='text-sm font-semibold'>{data.label}</p>
             </div>
             <div className='overflow-y-auto nowheel max-h-96 border-2 border-gray-400 rounded-b-md'>
