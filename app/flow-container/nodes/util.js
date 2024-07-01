@@ -81,7 +81,6 @@ export const generateNodes = (collections) => {
 
   // Arrange isolated nodes
   const positionedIsolatedNodes = arrangeIsolatedNodes(isolatedNodes, maxX + 200, minY);
-  console.log(positionedIsolatedNodes)
 
   // Combine all nodes
   const allNodes = [...positionedConnectedNodes, ...positionedIsolatedNodes];

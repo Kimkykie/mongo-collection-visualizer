@@ -55,7 +55,7 @@ const RenderField = ({ field, value }) => {
     );
 };
 
-const CustomNode = ({ data }) => {
+const CollectionNode = ({ data }) => {
     return (
         <div className='w-64'>
             <div className='bg-green-600 p-2 rounded-t-md text-center text-white'>
@@ -77,4 +77,4 @@ const CustomNode = ({ data }) => {
     );
 };
 
-export default CustomNode;
+export default CollectionNode;

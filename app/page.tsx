@@ -3,6 +3,7 @@
 import React, { useState, FormEvent } from 'react';
 import FlowContainer from './flow-container/index';
 import { Data } from './flow-container/types'
+import SchemaFlowVisualizer from './flow-container/index';
 
 
 export default function Home() {
@@ -56,7 +57,7 @@ export default function Home() {
       {data && (
         <div>
           <h2>Collections and Relationships</h2>
-          <FlowContainer collections={data.collections} />
+          <SchemaFlowVisualizer collections={data.collections} />
         </div>
       )}
 
