@@ -13,18 +13,20 @@ const FlowContainer = ({ collections }) => {
   // If you have custom edge types, define and memoize them similarly
   const edgeTypes = useMemo(() => ({}), []);
 
+  // TO DO: Implement the `generateEdges` function
+
   const initialNodes = generateNodes(collections);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
 
-  const initialEdges = generateEdges(collections, nodes);
+  const initialEdges = [];
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
   useEffect(() => {
     const newNodes = generateNodes(collections);
-    const newEdges = generateEdges(collections, newNodes);
+    const newEdges = [];
 
     setNodes(newNodes);
-    setEdges(newEdges);
+    setEdges([]);
   }, [collections, setNodes, setEdges]);
 
   return (

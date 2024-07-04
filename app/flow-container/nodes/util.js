@@ -4,17 +4,19 @@ import dagre from '@dagrejs/dagre';
 const parseCollections = (collections) => {
   const nodes = collections.map((collection) => ({
     id: collection.name,
-    data: { label: collection.name, fields: collection.fieldTypes },
+    data: { label: collection.name, fields: collection.fields, recordCount: collection.count},
   }));
 
-  const edges = collections.flatMap((collection) =>
-    collection.relationships
-      .filter((rel) => rel.reference != null)
-      .map((rel) => ({
-        source: collection.name,
-        target: rel.target,
-      }))
-  );
+  // const edges = collections.flatMap((collection) =>
+  //   collection.relationships
+  //     .filter((rel) => rel.reference != null)
+  //     .map((rel) => ({
+  //       source: collection.name,
+  //       target: rel.target,
+  //     }))
+  // );
+
+  const edges = []
 
   const connectedNodeIds = new Set(edges.flatMap((edge) => [edge.source, edge.target]));
   const isolatedNodes = nodes.filter((node) => !connectedNodeIds.has(node.id));
@@ -54,7 +56,7 @@ const createDagreLayout = (nodes, edges) => {
 // Function to arrange isolated nodes in a grid
 const arrangeIsolatedNodes = (isolatedNodes, startX, startY) => {
   const gapX = 100; // Increased space between isolated nodes horizontally
-  const gapY = 400; // Increased space between isolated nodes vertically
+  const gapY = 200; // Increased space between isolated nodes vertically
   const columns = Math.ceil(Math.sqrt(isolatedNodes.length));
 
   return isolatedNodes.map((node, index) => ({
@@ -93,3 +95,5 @@ export const generateNodes = (collections) => {
     data: node.data,
   }));
 };
+
+
