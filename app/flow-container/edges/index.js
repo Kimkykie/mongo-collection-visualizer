@@ -1,26 +1,21 @@
-export const generateEdges = (collections, nodes) => {
-  const edges = [];
-  collections?.forEach((collection) => {
-    collection?.relationships?.forEach((relationship) => {
+export const generateEdges = (relationships, nodes) => {
+  return relationships?.map((relationship) => {
+    const sourceNode = nodes.find((node) => node.id === relationship.source);
+    const targetNode = nodes.find((node) => node.id === relationship.target);
 
-      const sourceNode = nodes.find((node) => node.id === relationship.source);
-      const targetNode = nodes.find((node) => node.id === relationship.target);
-
-      if (sourceNode && targetNode) {
-
-        edges.push({
-          id: `${relationship.source}-${relationship.target}`,
-          source: relationship.source,
-          target: relationship.target,
-          type: 'smoothstep',
-          sourceKey: relationship.sourceKey,
-          targetKey: relationship.targetKey,
-        });
-      }
-    });
-  });
-  return edges;
+    if (sourceNode && targetNode) {
+      return {
+        id: `${relationship.source}-${relationship.target}-${relationship.sourceField}-${relationship.targetField}`,
+        source: relationship.source,
+        target: relationship.target,
+        type: 'smoothstep',
+        // label: `${relationship.sourceField} - ${relationship.targetField}`,
+        data: {
+          relationType: relationship.relationType,
+          confidence: relationship.confidence
+        }
+      };
+    }
+    return null;
+  }).filter(edge => edge !== null);
 };
-
-
-

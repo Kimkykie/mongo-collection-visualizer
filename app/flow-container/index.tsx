@@ -5,32 +5,35 @@ import CollectionNode from './nodes/CollectionNode';
 import { generateNodes } from './nodes/util';
 import { generateEdges } from './edges/index';
 
-const FlowContainer = ({ collections }) => {
+const FlowContainer = ({ collections, relationships }) => {
   const nodeTypes = useMemo(() => ({
     collection: CollectionNode,
   }), []);
 
-  // If you have custom edge types, define and memoize them similarly
   const edgeTypes = useMemo(() => ({}), []);
 
-  // TO DO: Implement the `generateEdges` function
+  const generateNodesCallback = useCallback(() => generateNodes(collections, relationships), [collections, relationships]);
+  const generateEdgesCallback = useCallback((nodes) => generateEdges(relationships, nodes), [relationships]);
 
-  const initialNodes = generateNodes(collections);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-
-  const initialEdges = [];
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState(generateNodesCallback());
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
 
   useEffect(() => {
-    const newNodes = generateNodes(collections);
-    const newEdges = [];
+    setNodes(generateNodesCallback());
+  }, [collections, relationships, setNodes, generateNodesCallback]);
 
+  useEffect(() => {
+    setEdges(generateEdgesCallback(nodes));
+  }, [nodes, relationships, setEdges, generateEdgesCallback]);
+
+  const onLayout = useCallback(() => {
+    const newNodes = generateNodesCallback();
     setNodes(newNodes);
-    setEdges([]);
-  }, [collections, setNodes, setEdges]);
+    setEdges(generateEdgesCallback(newNodes));
+  }, [generateNodesCallback, generateEdgesCallback, setNodes, setEdges]);
 
   return (
-    <div style={{ height: '80vh' }}>
+    <div style={{ width: '100%', height: '80vh' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -38,21 +41,22 @@ const FlowContainer = ({ collections }) => {
         onEdgesChange={onEdgesChange}
         nodeTypes={nodeTypes}
         edgeTypes={edgeTypes}
-        fitView
         snapToGrid={true}
+        fitView
         snapGrid={[16, 16]}
       >
         <Background />
         <Controls />
       </ReactFlow>
+      <button onClick={onLayout}>Re-layout</button>
     </div>
   );
 };
 
-const SchemaFlowVisualizer = ({ collections }) => {
+const SchemaFlowVisualizer = ({ collections, relationships }) => {
   return (
     <ReactFlowProvider>
-      <FlowContainer collections={collections} />
+      <FlowContainer collections={collections} relationships={relationships} />
     </ReactFlowProvider>
   );
 }

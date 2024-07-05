@@ -1,22 +1,20 @@
 import dagre from '@dagrejs/dagre';
 
-// Function to parse collections and identify isolated nodes
-const parseCollections = (collections) => {
+const nodeWidth = 400;
+const nodeHeight = 300;
+
+const parseCollections = (collections, relationships) => {
   const nodes = collections.map((collection) => ({
     id: collection.name,
     data: { label: collection.name, fields: collection.fields, recordCount: collection.count},
   }));
 
-  // const edges = collections.flatMap((collection) =>
-  //   collection.relationships
-  //     .filter((rel) => rel.reference != null)
-  //     .map((rel) => ({
-  //       source: collection.name,
-  //       target: rel.target,
-  //     }))
-  // );
-
-  const edges = []
+  const edges = relationships
+    .filter((rel) => rel.source != null && rel.target != null)
+    .map((rel) => ({
+      source: rel.source,
+      target: rel.target,
+    }));
 
   const connectedNodeIds = new Set(edges.flatMap((edge) => [edge.source, edge.target]));
   const isolatedNodes = nodes.filter((node) => !connectedNodeIds.has(node.id));
@@ -24,13 +22,16 @@ const parseCollections = (collections) => {
   return { nodes, edges, isolatedNodes };
 };
 
-const nodeWidth = 400;
-const nodeHeight = 300;
-
-// Function to create a hierarchical layout using dagre
 const createDagreLayout = (nodes, edges) => {
   const g = new dagre.graphlib.Graph();
-  g.setGraph({ rankdir: 'LR' });
+  g.setGraph({
+    rankdir: 'LR',
+    nodesep: 300, // Increase horizontal separation between nodes
+    ranksep: 200, // Increase vertical separation between ranks
+    edgesep: 150, // Increase separation between edges
+    acyclicer: 'greedy', // Help with cycles
+    ranker: 'network-simplex' // Use network simplex algorithm for ranking
+  });
   g.setDefaultEdgeLabel(() => ({}));
 
   nodes.forEach((node) => {
@@ -47,30 +48,30 @@ const createDagreLayout = (nodes, edges) => {
     const nodeWithPosition = g.node(node.id);
     return {
       ...node,
-      position: { x: nodeWithPosition.x - nodeWidth/ 2,
-        y: nodeWithPosition.y - nodeHeight / 2, },
+      position: {
+        x: nodeWithPosition.x - nodeWidth / 2,
+        y: nodeWithPosition.y - nodeHeight / 2,
+      },
     };
   });
 };
 
-// Function to arrange isolated nodes in a grid
 const arrangeIsolatedNodes = (isolatedNodes, startX, startY) => {
-  const gapX = 100; // Increased space between isolated nodes horizontally
-  const gapY = 200; // Increased space between isolated nodes vertically
+  const gapX = 100; // Increase horizontal gap
+  const gapY = 200; // Increase vertical gap
   const columns = Math.ceil(Math.sqrt(isolatedNodes.length));
 
   return isolatedNodes.map((node, index) => ({
     ...node,
     position: {
-      x: startX + (index % columns) * (nodeWidth),
+      x: startX + (index % columns) * (nodeWidth + gapX),
       y: startY + Math.floor(index / columns) * (nodeHeight + gapY),
     },
   }));
 };
 
-// Main function to generate nodes with optimized layout
-export const generateNodes = (collections) => {
-  const { nodes, edges, isolatedNodes } = parseCollections(collections);
+export const generateNodes = (collections, relationships) => {
+  const { nodes, edges, isolatedNodes } = parseCollections(collections, relationships);
 
   // Create hierarchical layout for connected nodes
   const positionedConnectedNodes = createDagreLayout(nodes.filter(node => !isolatedNodes.includes(node)), edges);
@@ -82,7 +83,7 @@ export const generateNodes = (collections) => {
   const minY = Math.min(...yValues, 0);
 
   // Arrange isolated nodes
-  const positionedIsolatedNodes = arrangeIsolatedNodes(isolatedNodes, maxX + 200, minY);
+  const positionedIsolatedNodes = arrangeIsolatedNodes(isolatedNodes, maxX + 400, minY);
 
   // Combine all nodes
   const allNodes = [...positionedConnectedNodes, ...positionedIsolatedNodes];
@@ -91,9 +92,7 @@ export const generateNodes = (collections) => {
   return allNodes.map((node) => ({
     id: node.id,
     type: 'collection',
-    position: { x: node.position.x, y: node.position.y },
+    position: node.position,
     data: node.data,
   }));
 };
-
-
