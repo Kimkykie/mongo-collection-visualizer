@@ -11,6 +11,7 @@ import SchemaFlowVisualizer from './flow-container/index';
 export default function Home() {
   const [mongoURI, setMongoURI] = useState<string>('');
   const [data, setData] = useState<Data | null>(null);
+  const [databaseName, setDatabaseName] = useState<string>('');
   const [relationships, setRelationships] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +37,7 @@ export default function Home() {
       }
       const result: Data = await response.json();
       setData(result);
+      setDatabaseName(result.databaseName);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -62,8 +64,7 @@ export default function Home() {
         throw new Error('Failed to fetch relationships');
       }
       const result = await response.json();
-      const responseData = JSON.parse(result);
-      setRelationships(responseData?.relationships);
+      setRelationships(result);
     } catch (err) {
       setError(err.message);
     } finally {

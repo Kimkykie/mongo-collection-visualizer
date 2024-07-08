@@ -44,7 +44,7 @@ export async function POST(req) {
 
     const processedCollections = extractFieldTypes(collectionData);
 
-    return NextResponse.json({ collections: processedCollections });
+    return NextResponse.json({ collections: processedCollections, databaseName: db.databaseName});
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Failed to connect to MongoDB' }, { status: 500 });
