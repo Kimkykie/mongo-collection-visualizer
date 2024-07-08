@@ -1,135 +1,137 @@
 'use client';
 
-import React, { useState, FormEvent } from 'react';
-import { Data } from './flow-container/types';
-import SchemaFlowVisualizer from './flow-container/index';
+import React, { useState, useCallback } from 'react';
+import { Collection } from './flow-container/types/collections';
+import { Relationship } from './flow-container/types/relationships';
+import SchemaFlowVisualizer from './components/SchemaFlowVisualizer';
+import MongoDBConnectionForm from './components/MongoDBConnectionForm';
+import OpenAIButton from './components/OpenAIButton';
+import ErrorMessage from './components/ErrorMessage';
+import LoadingIndicator from './components/LoadingIndicator';
 
 /**
- * Home component for managing MongoDB connection and visualizing schema relationships.
- * @component
+ * Represents the structure of the data returned from the MongoDB connection
  */
-export default function Home() {
+interface Data {
+  databaseName: string;
+  collections: Collection[];
+}
+
+/**
+ * Home component for the MongoDB Schema Visualizer
+ * This component manages the state and logic for connecting to MongoDB,
+ * fetching relationships, and rendering the schema visualization.
+ * @returns {JSX.Element} The rendered Home component
+ */
+export default function Home(): JSX.Element {
   const [mongoURI, setMongoURI] = useState<string>('');
   const [data, setData] = useState<Data | null>(null);
-  const [databaseName, setDatabaseName] = useState<string>('');
-  const [relationships, setRelationships] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [relationships, setRelationships] = useState<Relationship[]>([]);
+  const [isConnecting, setIsConnecting] = useState<boolean>(false);
+  const [isFetchingRelationships, setIsFetchingRelationships] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   /**
-   * Handles form submission to connect to MongoDB.
-   * @param {FormEvent<HTMLFormElement>} e - Form event.
+   * Handles the connection to MongoDB
+   * @param {string} uri - The MongoDB connection URI
    */
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleConnect = useCallback(async (uri: string) => {
+    setIsConnecting(true);
     setError(null);
+    setData(null);
+    setRelationships([]);
+
     try {
       const response = await fetch('/api/connect', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ mongoURI })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ mongoURI: uri }),
       });
+
       if (!response.ok) {
         throw new Error('Failed to connect to MongoDB');
       }
+
       const result: Data = await response.json();
       setData(result);
-      setDatabaseName(result.databaseName);
+      setMongoURI(uri);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
-      setLoading(false);
+      setIsConnecting(false);
     }
-  };
+  }, []);
 
   /**
-   * Fetches relationship data based on the provided collections.
-   * @param {any[]} collections - The collections to analyze.
+   * Fetches relationships between collections using OpenAI
    */
-  const fetchRelationships = async (collections: any[]) => {
-    setLoading(true);
+  const handleFetchRelationships = useCallback(async () => {
+    if (!data?.collections.length) return;
+
+    setIsFetchingRelationships(true);
     setError(null);
+
     try {
       const response = await fetch('/api/relationships', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ schemas: collections })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ schemas: data.collections }),
       });
+
       if (!response.ok) {
         throw new Error('Failed to fetch relationships');
       }
-      const result = await response.json();
+
+      const result: Relationship[] = await response.json();
       setRelationships(result);
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
-      setLoading(false);
+      setIsFetchingRelationships(false);
     }
-  };
-
-  /**
-   * Sends schema data to OpenAI to fetch relationships.
-   */
-  const handleSendToOpenAI = async () => {
-    if (data?.collections) {
-      fetchRelationships(data.collections);
-    }
-  };
+  }, [data?.collections]);
 
   return (
-    <div className="mx-auto sm:px-6 lg:px-8">
-      <h1 className="mt-4 text-4xl mb-4 font-bold">MongoDB Connection</h1>
-      <div>
-        <label htmlFor="mongoURI" className="block text-sm font-medium text-gray-700 mr-2">
-          MongoDB URI
-        </label>
-        <form onSubmit={handleSubmit} className="flex items-center space-x-2">
-          <div className="flex-grow">
-            <div className="flex flex-grow items-center">
-              <input
-                type="text"
-                id="mongoURI"
-                className="flex-grow block rounded-l-md border-0 py-1.5 pl-2 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                value={mongoURI}
-                onChange={(e) => setMongoURI(e.target.value)}
-                placeholder="Enter MongoDB URI"
-                required
-              />
-            </div>
-          </div>
-          <button
-            className="rounded-r-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-            type="submit"
-            disabled={loading}
-          >
-            Connect
-          </button>
-        </form>
-      </div>
+    <div className="container mx-auto px-4 py-8">
+      <h1 className="text-4xl font-bold mb-8">MongoDB Schema Visualizer</h1>
 
-      {error && <div className="text-red-600 mt-2">{error}</div>}
-      {loading && <div className="mt-2">Loading...</div>}
+      <MongoDBConnectionForm
+        onSubmit={handleConnect}
+        isLoading={isConnecting}
+      />
 
-      <div className="mt-4">
-        <button
-          className="rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-          onClick={handleSendToOpenAI}
-          disabled={loading}
-        >
-          Send to OpenAI
-        </button>
-      </div>
+      {error && <ErrorMessage message={error} />}
+
+      {isConnecting && <LoadingIndicator message="Connecting to MongoDB..." />}
 
       {data && (
-        <div>
-          <h2>Collections and Relationships</h2>
-          <SchemaFlowVisualizer collections={data.collections} relationships={relationships} />
-        </div>
+        <>
+          <h2 className="text-2xl font-semibold mt-8 mb-4">
+            Connected to: {data.databaseName}
+          </h2>
+
+          <OpenAIButton
+            onClick={handleFetchRelationships}
+            isLoading={isFetchingRelationships}
+            isDisabled={!data.collections.length}
+          />
+
+          {isFetchingRelationships && (
+            <LoadingIndicator message="Fetching relationships..." />
+          )}
+
+          {data.collections.length > 0 && (
+            <div className="mt-8">
+              <h3 className="text-xl font-semibold mb-4">
+                Collections and Relationships
+              </h3>
+              <SchemaFlowVisualizer
+                collections={data.collections}
+                relationships={relationships}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

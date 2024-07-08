@@ -1,22 +1,38 @@
+// flow-container/FlowContainer.tsx
 import React, { useCallback, useEffect, useMemo } from 'react';
-import ReactFlow, { Background, Controls, ReactFlowProvider, useNodesState, useEdgesState } from 'reactflow';
+import ReactFlow, {
+  Background,
+  Controls,
+  useNodesState,
+  useEdgesState,
+  Node,
+  Edge,
+  NodeTypes,
+  EdgeTypes,
+} from 'reactflow';
 import 'reactflow/dist/style.css';
 import CollectionNode from './nodes/CollectionNode';
-import { generateNodes } from './nodes/util';
-import { generateEdges } from './edges/index';
 
-const FlowContainer = ({ collections, relationships }) => {
-  const nodeTypes = useMemo(() => ({
-    collection: CollectionNode,
-  }), []);
+import { generateEdges } from './edges';
+import { Collection } from './types/collections';
+import { Relationship } from './types/relationships';
+import { FlowNodeData, FlowEdgeData } from './types/nodes';
+import { generateNodes } from './utils/layout';
 
-  const edgeTypes = useMemo(() => ({}), []);
+interface FlowContainerProps {
+  collections: Collection[];
+  relationships: Relationship[];
+}
+
+const FlowContainer: React.FC<FlowContainerProps> = ({ collections, relationships }) => {
+  const nodeTypes = useMemo<NodeTypes>(() => ({ collection: CollectionNode }), []);
+  const edgeTypes = useMemo<EdgeTypes>(() => ({}), []);
 
   const generateNodesCallback = useCallback(() => generateNodes(collections, relationships), [collections, relationships]);
-  const generateEdgesCallback = useCallback((nodes) => generateEdges(relationships, nodes), [relationships]);
+  const generateEdgesCallback = useCallback((nodes: Node<FlowNodeData>[]) => generateEdges(relationships, nodes), [relationships]);
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(generateNodesCallback());
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [nodes, setNodes, onNodesChange] = useNodesState<FlowNodeData>(generateNodesCallback());
+  const [edges, setEdges, onEdgesChange] = useEdgesState<FlowEdgeData>([]);
 
   useEffect(() => {
     setNodes(generateNodesCallback());
@@ -53,12 +69,4 @@ const FlowContainer = ({ collections, relationships }) => {
   );
 };
 
-const SchemaFlowVisualizer = ({ collections, relationships }) => {
-  return (
-    <ReactFlowProvider>
-      <FlowContainer collections={collections} relationships={relationships} />
-    </ReactFlowProvider>
-  );
-}
-
-export default SchemaFlowVisualizer;
+export default FlowContainer;
