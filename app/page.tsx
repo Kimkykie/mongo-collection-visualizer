@@ -1,21 +1,14 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
-import { Collection } from './flow-container/types/collections';
-import { Relationship } from './flow-container/types/relationships';
+import { useMongoStore } from './store/mongoStore';
+import { useRelationshipStore } from './store/relationshipStore';
 import SchemaFlowVisualizer from './components/SchemaFlowVisualizer';
 import MongoDBConnectionForm from './components/MongoDBConnectionForm';
 import OpenAIButton from './components/OpenAIButton';
 import ErrorMessage from './components/ErrorMessage';
 import LoadingIndicator from './components/LoadingIndicator';
 
-/**
- * Represents the structure of the data returned from the MongoDB connection
- */
-interface Data {
-  databaseName: string;
-  collections: Collection[];
-}
 
 /**
  * Home component for the MongoDB Schema Visualizer
@@ -24,12 +17,15 @@ interface Data {
  * @returns {JSX.Element} The rendered Home component
  */
 export default function Home(): JSX.Element {
-  const [mongoURI, setMongoURI] = useState<string>('');
-  const [data, setData] = useState<Data | null>(null);
-  const [relationships, setRelationships] = useState<Relationship[]>([]);
-  const [isConnecting, setIsConnecting] = useState<boolean>(false);
-  const [isFetchingRelationships, setIsFetchingRelationships] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    mongoURI, databaseName, collections, isConnecting, error: mongoError,
+    setMongoURI, setDatabaseInfo, setIsConnecting, setError: setMongoError, reset: resetMongo
+  } = useMongoStore();
+
+  const {
+    relationships, isFetchingRelationships, error: relationshipError,
+    setRelationships, setIsFetchingRelationships, setError: setRelationshipError, reset: resetRelationships
+  } = useRelationshipStore();
 
   /**
    * Handles the connection to MongoDB
@@ -37,9 +33,9 @@ export default function Home(): JSX.Element {
    */
   const handleConnect = useCallback(async (uri: string) => {
     setIsConnecting(true);
-    setError(null);
-    setData(null);
-    setRelationships([]);
+    setMongoError(null);
+    resetMongo();
+    resetRelationships();
 
     try {
       const response = await fetch('/api/connect', {
@@ -52,11 +48,11 @@ export default function Home(): JSX.Element {
         throw new Error('Failed to connect to MongoDB');
       }
 
-      const result: Data = await response.json();
-      setData(result);
+      const result = await response.json();
+      setDatabaseInfo(result.databaseName, result.collections);
       setMongoURI(uri);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setMongoError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsConnecting(false);
     }
@@ -66,30 +62,30 @@ export default function Home(): JSX.Element {
    * Fetches relationships between collections using OpenAI
    */
   const handleFetchRelationships = useCallback(async () => {
-    if (!data?.collections.length) return;
+    if (!collections.length) return;
 
     setIsFetchingRelationships(true);
-    setError(null);
+    setRelationshipError(null);
 
     try {
       const response = await fetch('/api/relationships', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ schemas: data.collections }),
+        body: JSON.stringify({ schemas: collections }),
       });
 
       if (!response.ok) {
         throw new Error('Failed to fetch relationships');
       }
 
-      const result: Relationship[] = await response.json();
+      const result = await response.json();
       setRelationships(result);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      setRelationshipError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {
       setIsFetchingRelationships(false);
     }
-  }, [data?.collections]);
+  }, [collections, setIsFetchingRelationships, setRelationshipError, setRelationships]);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -100,35 +96,29 @@ export default function Home(): JSX.Element {
         isLoading={isConnecting}
       />
 
-      {error && <ErrorMessage message={error} />}
+      {(mongoError || relationshipError) && <ErrorMessage message={mongoError || relationshipError} />}
 
       {isConnecting && <LoadingIndicator message="Connecting to MongoDB..." />}
 
-      {data && (
+      {databaseName && (
         <>
-          <h2 className="text-2xl font-semibold mt-8 mb-4">
-            Connected to: {data.databaseName}
+          <h2 className="text-2xl font-semibold mt-4">
+            Connected to: {databaseName}
           </h2>
 
           <OpenAIButton
             onClick={handleFetchRelationships}
             isLoading={isFetchingRelationships}
-            isDisabled={!data.collections.length}
+            isDisabled={!collections.length}
           />
 
           {isFetchingRelationships && (
             <LoadingIndicator message="Fetching relationships..." />
           )}
 
-          {data.collections.length > 0 && (
+          {collections.length > 0 && (
             <div className="mt-8">
-              <h3 className="text-xl font-semibold mb-4">
-                Collections and Relationships
-              </h3>
-              <SchemaFlowVisualizer
-                collections={data.collections}
-                relationships={relationships}
-              />
+              <SchemaFlowVisualizer />
             </div>
           )}
         </>

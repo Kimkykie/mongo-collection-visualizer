@@ -9,22 +9,23 @@ import ReactFlow, {
   Edge,
   NodeTypes,
   EdgeTypes,
+  useReactFlow,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CollectionNode from './nodes/CollectionNode';
 
 import { generateEdges } from './edges';
-import { Collection } from './types/collections';
-import { Relationship } from './types/relationships';
 import { FlowNodeData, FlowEdgeData } from './types/nodes';
 import { generateNodes } from './utils/layout';
+import { useMongoStore } from '../store/mongoStore';
+import { useRelationshipStore } from '../store/relationshipStore';
 
-interface FlowContainerProps {
-  collections: Collection[];
-  relationships: Relationship[];
-}
 
-const FlowContainer: React.FC<FlowContainerProps> = ({ collections, relationships }) => {
+const FlowContainer: React.FC = () => {
+  const { collections } = useMongoStore();
+  const { relationships } = useRelationshipStore();
+  const {fitView} = useReactFlow();
+
   const nodeTypes = useMemo<NodeTypes>(() => ({ collection: CollectionNode }), []);
   const edgeTypes = useMemo<EdgeTypes>(() => ({}), []);
 
@@ -40,16 +41,20 @@ const FlowContainer: React.FC<FlowContainerProps> = ({ collections, relationship
 
   useEffect(() => {
     setEdges(generateEdgesCallback(nodes));
+    // Fit view after edges change
+    setTimeout(() => fitView({ padding: 0.2 }), 0);
   }, [nodes, relationships, setEdges, generateEdgesCallback]);
 
   const onLayout = useCallback(() => {
     const newNodes = generateNodesCallback();
     setNodes(newNodes);
     setEdges(generateEdgesCallback(newNodes));
+    // Fit view after layout
+    setTimeout(() => fitView({ padding: 0.2 }), 0);
   }, [generateNodesCallback, generateEdgesCallback, setNodes, setEdges]);
 
   return (
-    <div style={{ width: '100%', height: '80vh' }}>
+    <div style={{ width: '100%', height: '70vh' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
