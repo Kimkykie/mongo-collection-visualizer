@@ -1,10 +1,10 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { Recursive } from "next/font/google";
+import { Rubik } from "next/font/google";
 import "./globals.css";
 
 // Define the font
-const inter = Recursive({
+const inter = Rubik({
   subsets: ["latin"],
   display: 'swap',
 });

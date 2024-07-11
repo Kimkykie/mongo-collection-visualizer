@@ -88,41 +88,53 @@ export default function Home(): JSX.Element {
   }, [collections, setIsFetchingRelationships, setRelationshipError, setRelationships]);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold mb-8">MongoDB Schema Visualizer</h1>
+    <>
+      <div className="relative w-full h-16 bg-gray-100">
+        <h1 className="absolute top-4 left-4 text-2xl font-bold">
+          <span className="text-green-600">Mongo</span>
+          <span className="text-gray-600">Schema</span>
+        </h1>
+      </div>
 
-      <MongoDBConnectionForm
-        onSubmit={handleConnect}
-        isLoading={isConnecting}
-      />
+      <div className="container mx-auto px-4 py-4">
+        <MongoDBConnectionForm
+          onSubmit={handleConnect}
+          isLoading={isConnecting}
+        />
 
-      {(mongoError || relationshipError) && <ErrorMessage message={mongoError || relationshipError} />}
+        {(mongoError || relationshipError) && <ErrorMessage message={mongoError || relationshipError} />}
 
-      {isConnecting && <LoadingIndicator message="Connecting to MongoDB..." />}
+        {isConnecting && <LoadingIndicator message="Connecting to MongoDB..." />}
 
-      {databaseName && (
-        <>
-          <h2 className="text-2xl font-semibold mt-4">
-            Connected to: {databaseName}
-          </h2>
+        {databaseName && (
+          <>
+            <h2 className="text-2xl font-semibold mt-4">
+              Connected to: {databaseName}
+            </h2>
 
-          <OpenAIButton
-            onClick={handleFetchRelationships}
-            isLoading={isFetchingRelationships}
-            isDisabled={!collections.length}
-          />
+            <OpenAIButton
+              onClick={handleFetchRelationships}
+              isLoading={isFetchingRelationships}
+              isDisabled={!collections.length}
+            />
 
-          {isFetchingRelationships && (
-            <LoadingIndicator message="Fetching relationships..." />
-          )}
-
-          {collections.length > 0 && (
-            <div className="mt-8">
-              <SchemaFlowVisualizer />
-            </div>
-          )}
-        </>
-      )}
-    </div>
+            {isFetchingRelationships && (
+              <LoadingIndicator message="Fetching relationships..." />
+            )}
+          </>
+        )}
+      </div>
+      <div className='w-full'>
+        {databaseName && (
+          <>
+            {collections.length > 0 && (
+              <div className="mt-8">
+                <SchemaFlowVisualizer />
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
 }

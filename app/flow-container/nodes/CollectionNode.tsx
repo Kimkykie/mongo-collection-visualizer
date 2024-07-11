@@ -46,23 +46,23 @@ const RenderField: React.FC<RenderFieldProps> = ({ field, value, level = 0 }) =>
 
     const fieldType = value.type === 'Object' ? 'Object' : value.type;
     const paddingLeft = `pl-${level * 4}`; // Adjust padding based on the nesting level
-    const gapClass = level === 0 ? 'gap-x-8' : 'gap-x-2';
+    const gapClass = level === 0 ? 'gap-x-4' : 'gap-x-2';
 
     return (
-        <div className={`grid grid-cols-2 ${gapClass} items-center ${paddingLeft}`}>
-            <div className="flex items-center">
+        <div className={`grid grid-cols-4  items-center ${paddingLeft}`}>
+            <div className="col-span-3 flex items-center">
                 {getIcon(field, value.type)}
                 <strong
                     onClick={value.type === 'Object' ? () => setIsOpen(!isOpen) : undefined}
-                    className={`cursor-pointer truncate max-w-xs`}
+                    className={`cursor-pointer truncate max-w-full`}
                     title={field}
                 >
-                    {truncateText(field, maxChars)}: {value.type === 'Object' && (isOpen ? '▼' : '▶')}
+                    {truncateText(field, maxChars)} {value.type === 'Object' && (isOpen ? '▼' : '▶')}
                 </strong>
             </div>
-            <span className="text-gray-500">{fieldType}</span>
+            <span className="text-gray-500 text-right">{fieldType}</span>
             {value.type === 'Object' && isOpen && value.fields && (
-                <ul className="col-span-2 ml-4">
+                <ul className="col-span-4 ml-4">
                     {Object.entries(value.fields).map(([key, fieldValue]) => (
                         <li key={key} className="p-1">
                             <RenderField field={key} value={fieldValue} level={level + 1} />
@@ -84,7 +84,7 @@ interface CollectionNodeProps {
 const CollectionNode: React.FC<CollectionNodeProps> = ({ data }) => {
   return (
     <div className='w-72'>
-      <div className='bg-green-400 p-2 rounded-t-md text-center text-gray-700'>
+      <div className='bg-green-300 p-2 rounded-t-md text-center text-gray-700'>
         <p className='text-sm font-semibold'>{data.label}</p>
       </div>
       <div className='overflow-y-auto nowheel max-h-96 border-2 border-gray-400 rounded-b-md'>
