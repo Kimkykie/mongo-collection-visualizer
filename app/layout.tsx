@@ -1,10 +1,10 @@
 import React from 'react';
 import { Metadata } from 'next';
-import { Rubik } from "next/font/google";
+import { DM_Sans } from "next/font/google";
 import "./globals.css";
 
 // Define the font
-const inter = Rubik({
+const inter = DM_Sans({
   subsets: ["latin"],
   display: 'swap',
 });

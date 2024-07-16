@@ -54,7 +54,7 @@ const FlowContainer: React.FC = () => {
   }, [generateNodesCallback, generateEdgesCallback, setNodes, setEdges]);
 
   return (
-    <div style={{ width: '100%', height: '65vh' }}>
+    <div style={{ width: '100%', height: '80vh' }}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
