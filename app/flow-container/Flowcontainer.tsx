@@ -41,8 +41,6 @@ const FlowContainer: React.FC = () => {
 
   useEffect(() => {
     setEdges(generateEdgesCallback(nodes));
-    // Fit view after edges change
-    setTimeout(() => fitView({ padding: 0.2 }), 0);
   }, [nodes, relationships, setEdges, generateEdgesCallback]);
 
   const onLayout = useCallback(() => {

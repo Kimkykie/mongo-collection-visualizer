@@ -16,7 +16,9 @@ interface NavbarButtonProps {
   isLoading?: boolean;
   isDisabled?: boolean;
   menuItems?: MenuItem[];
-  title?: string;
+  menuItemTitle?: string;
+  showLabel?: boolean;
+  primaryButton?: boolean;
 }
 
 export default function NavbarButton({
@@ -26,33 +28,47 @@ export default function NavbarButton({
   isLoading,
   isDisabled,
   menuItems,
-  title,
+  menuItemTitle,
+  showLabel,
+  primaryButton,
 }: NavbarButtonProps): JSX.Element {
-  const ButtonContent = () => (
-    <div className="relative inline-flex items-center gap-x-1.5 px-3 py-2 text-sm font-semibold text-green-600 shadow-sm hover:bg-green-600 hover:text-white">
+  const buttonClasses = `
+    relative inline-flex items-center justify-center w-full
+    gap-x-4 px-3 py-2 rounded-md
+    text-sm
+    ${primaryButton
+      ? 'bg-green-600 text-white hover:bg-green-700'
+      : 'bg-green-50 text-green-800 hover:bg-green-100 border-green-800 border'}
+    shadow-sm
+    transition-all duration-200 ease-in-out
+    hover:ring-2 hover:ring-green-400
+    disabled:opacity-60 disabled:cursor-not-allowed
+  `;
+
+  const ButtonContent = (
+    <>
       {icon}
+      {showLabel && <span>{label}</span>}
       {isLoading && (
         <svg className="animate-spin h-5 w-5 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
       )}
-    </div>
+    </>
   );
 
   if (menuItems) {
     return (
-      <Menu as="div" className="relative flex-shrink-0">
-        <MenuButton className="relative flex rounded-md bg-green-50 border-gray-200 border-2" disabled={isDisabled}>
+      <Menu as="div" className="relative w-full">
+        <MenuButton className={buttonClasses} disabled={isDisabled}>
           <span className="sr-only">{label}</span>
-          <ButtonContent />
+          {ButtonContent}
         </MenuButton>
         <MenuItems className="absolute right-0 z-10 mt-2 w-48 origin-top-right rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-          {
-            title && (
-              <p className="text-sm text-green-600 px-4 py-2 font-semibold">{title}</p>
-            )
-          }
+          {menuItemTitle && (
+            <p className="text-sm text-green-600 px-4 py-2 font-bold">{menuItemTitle}</p>
+          )}
           {menuItems.map((item) => (
             <MenuItem key={item.name}>
               {({ active }) => (
@@ -85,12 +101,12 @@ export default function NavbarButton({
 
   return (
     <button
-      className="relative flex rounded-md bg-green-50 border-gray-200 border-2"
+      className={buttonClasses}
       onClick={onClick}
       disabled={isDisabled}
     >
       <span className="sr-only">{label}</span>
-      <ButtonContent />
+      {ButtonContent}
     </button>
   );
 }

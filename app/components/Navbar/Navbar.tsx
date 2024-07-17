@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Disclosure } from '@headlessui/react';
-import { FunnelIcon, EllipsisHorizontalIcon } from '@heroicons/react/24/outline';
+import { FunnelIcon, EllipsisHorizontalCircleIcon, MoonIcon } from '@heroicons/react/24/outline';
 import MongoDBConnectionForm from '../MongoDBConnectionForm';
 import NavbarButton from './NavbarButton';
 
@@ -56,22 +56,30 @@ export default function Navbar({
           <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
             <MongoDBConnectionForm onSubmit={onSubmit} isLoading={isLoading} />
           </div>
-          <div className="z-10 ml-4 flex items-center space-x-2">
+          <div className="z-10 ml-4 flex items-center">
             <NavbarButton
               icon={<img src="/icons/sitemap.svg" alt="Analyze" className="h-6 w-6 -rotate-90" />}
-              label="Analyze"
+              label="Fetch relationships"
               isLoading={isFetchingRelationships}
               isDisabled={isRelationshipsDisabled}
               menuItems={analyzeMenuItems}
-              title='Fetch relationships'
+              menuItemTitle='Fetch mode'
+              showLabel
             />
+          </div>
+          <div className="flex items-center absolute right-0 top-20 space-x-2">
             <NavbarButton
-              icon={<FunnelIcon className="h-6 w-6" />}
+              icon={<FunnelIcon className="h-5 w-5" />}
               label="Filter"
             />
             <NavbarButton
-              icon={<EllipsisHorizontalIcon className="h-6 w-6" />}
+              icon={<EllipsisHorizontalCircleIcon className="h-5 w-5" />}
               label="Settings"
+              menuItems={settingsNavigation}
+            />
+            <NavbarButton
+              icon={<MoonIcon className="h-5 w-5" />}
+              label="Switch Mode"
               menuItems={settingsNavigation}
             />
           </div>
