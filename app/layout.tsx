@@ -30,7 +30,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
         <link rel="icon" href="/favicon.ico" />
       </head>
       <body className={inter.className}>
-        <main className="min-h-screen bg-gray-100">
+        <main className="min-h-screen bg-blue-50">
           {children}
         </main>
       </body>

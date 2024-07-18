@@ -7,6 +7,7 @@ import SchemaFlowVisualizer from './components/SchemaFlowVisualizer';
 import ErrorMessage from './components/ErrorMessage';
 import LoadingIndicator from './components/LoadingIndicator';
 import Navbar from './components/Navbar/Navbar';
+import EmptyState from './components/EmptyState';
 
 export default function Home(): JSX.Element {
   const {
@@ -72,8 +73,43 @@ export default function Home(): JSX.Element {
     }
   };
 
+  const renderContent = () => {
+    if (isConnecting) {
+      return <LoadingIndicator message="Connecting to MongoDB..." />;
+    }
+
+    if (isFetchingRelationships) {
+      return <LoadingIndicator message="Fetching relationships..." />;
+    }
+
+    if (collections.length === 0) {
+      return (
+        <div className="flex-grow flex items-center justify-center">
+          <EmptyState />
+        </div>
+      );
+    }
+
+    if (databaseName && collections.length > 0) {
+      return (
+        <>
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold">
+              Connected to: <span className="text-green-600">{databaseName}</span>
+            </h2>
+          </div>
+          <div>
+            <SchemaFlowVisualizer />
+          </div>
+        </>
+      );
+    }
+
+    return null;
+  };
+
   return (
-    <>
+    <div className="flex flex-col min-h-screen">
       <Navbar
         onSubmit={handleConnect}
         isLoading={isConnecting}
@@ -82,29 +118,10 @@ export default function Home(): JSX.Element {
         isRelationshipsDisabled={!collections.length}
       />
 
-      <main className="mx-auto px-2 py-4 w-full">
+      <main className="flex-grow flex flex-col mx-auto px-2 py-4 w-full">
         {(mongoError || relationshipError) && <ErrorMessage message={mongoError || relationshipError} />}
-
-        {isConnecting && <LoadingIndicator message="Connecting to MongoDB..." />}
-
-        {databaseName && (
-          <div className="text-center mb-4">
-            <h2 className="text-2xl font-semibold">
-              Connected to: <span className="text-green-600">{databaseName}</span>
-            </h2>
-          </div>
-        )}
-
-        {isFetchingRelationships && (
-          <LoadingIndicator message="Fetching relationships..." />
-        )}
-
-        {databaseName && collections.length > 0 && (
-          <div className="mt-8">
-            <SchemaFlowVisualizer />
-          </div>
-        )}
+        {renderContent()}
       </main>
-    </>
+    </div>
   );
 }

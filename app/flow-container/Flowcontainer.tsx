@@ -10,6 +10,7 @@ import ReactFlow, {
   NodeTypes,
   EdgeTypes,
   useReactFlow,
+  BackgroundVariant,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 import CollectionNode from './nodes/CollectionNode';
@@ -64,7 +65,8 @@ const FlowContainer: React.FC = () => {
         fitView
         snapGrid={[16, 16]}
       >
-        <Background />
+        <Background variant={BackgroundVariant.Lines}/>
+
         <Controls />
       </ReactFlow>
       <button onClick={onLayout}>Re-layout</button>

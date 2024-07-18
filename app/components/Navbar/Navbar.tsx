@@ -67,22 +67,27 @@ export default function Navbar({
               showLabel
             />
           </div>
-          <div className="flex items-center absolute right-0 top-20 space-x-2">
-            <NavbarButton
-              icon={<FunnelIcon className="h-5 w-5" />}
-              label="Filter"
-            />
-            <NavbarButton
-              icon={<EllipsisHorizontalCircleIcon className="h-5 w-5" />}
-              label="Settings"
-              menuItems={settingsNavigation}
-            />
-            <NavbarButton
-              icon={<MoonIcon className="h-5 w-5" />}
-              label="Switch Mode"
-              menuItems={settingsNavigation}
-            />
-          </div>
+          {
+            !isRelationshipsDisabled && (
+              <div className="flex items-center absolute right-0 top-20 space-x-2">
+                <NavbarButton
+                  icon={<FunnelIcon className="h-5 w-5" />}
+                  label="Filter"
+                />
+                <NavbarButton
+                  icon={<EllipsisHorizontalCircleIcon className="h-5 w-5" />}
+                  label="Settings"
+                  menuItems={settingsNavigation}
+                />
+                <NavbarButton
+                  icon={<MoonIcon className="h-5 w-5" />}
+                  label="Switch Mode"
+                  menuItems={settingsNavigation}
+                />
+              </div>
+            )
+          }
+
         </div>
       </div>
     </Disclosure>
