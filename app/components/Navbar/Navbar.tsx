@@ -7,16 +7,14 @@ import MongoDBConnectionForm from '../MongoDBConnectionForm';
 import NavbarButton from './NavbarButton';
 
 interface NavbarProps {
-  onSubmit: (uri: string) => Promise<void>;
-  isLoading: boolean;
+  databaseName: string | null;
   onFetchRelationships: () => Promise<void>;
   isFetchingRelationships: boolean;
   isRelationshipsDisabled: boolean;
 }
 
 export default function Navbar({
-  onSubmit,
-  isLoading,
+  databaseName,
   onFetchRelationships,
   isFetchingRelationships,
   isRelationshipsDisabled,
@@ -54,17 +52,23 @@ export default function Navbar({
             </div>
           </div>
           <div className="relative z-0 flex flex-1 items-center justify-center px-2 sm:absolute sm:inset-0">
-            <MongoDBConnectionForm onSubmit={onSubmit} isLoading={isLoading} />
+            {
+              databaseName && <div className="text-center">
+                <h2 className="text-2xl font-semibold">
+                  Connected to: <span className="text-green-600">{databaseName}</span>
+                </h2>
+              </div>
+            }
           </div>
           <div className="z-10 ml-4 flex items-center">
             <NavbarButton
-              icon={<img src="/icons/sitemap.svg" alt="Analyze" className="h-6 w-6 -rotate-90" />}
               label="Fetch relationships"
               isLoading={isFetchingRelationships}
               isDisabled={isRelationshipsDisabled}
               menuItems={analyzeMenuItems}
               menuItemTitle='Fetch mode'
               showLabel
+              primaryButton
             />
           </div>
           {

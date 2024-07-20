@@ -16,7 +16,7 @@ const MongoDBConnectionForm: React.FC<Props> = ({ onSubmit, isLoading }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-3/5 flex items-center">
+    <form onSubmit={handleSubmit} className="w-full flex items-center">
       <div className="relative flex-grow">
         <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
           <ComputerDesktopIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />

@@ -8,6 +8,10 @@ import ErrorMessage from './components/ErrorMessage';
 import LoadingIndicator from './components/LoadingIndicator';
 import Navbar from './components/Navbar/Navbar';
 import EmptyState from './components/EmptyState';
+import { useModal } from './hooks/useModal';
+import Modal from './components/Modal';
+import MongoDBConnectionForm from './components/MongoDBConnectionForm';
+import { CircleStackIcon } from '@heroicons/react/24/outline';
 
 export default function Home(): JSX.Element {
   const {
@@ -19,6 +23,8 @@ export default function Home(): JSX.Element {
     relationships, isFetchingRelationships, error: relationshipError,
     setRelationships, setIsFetchingRelationships, setError: setRelationshipError, reset: resetRelationships
   } = useRelationshipStore();
+
+  const { isOpen, openModal, closeModal } = useModal();
 
   const handleConnect = async (uri: string) => {
     setIsConnecting(true);
@@ -85,7 +91,7 @@ export default function Home(): JSX.Element {
     if (collections.length === 0) {
       return (
         <div className="flex-grow flex items-center justify-center">
-          <EmptyState />
+          <EmptyState onConnect={openModal} />
         </div>
       );
     }
@@ -93,14 +99,7 @@ export default function Home(): JSX.Element {
     if (databaseName && collections.length > 0) {
       return (
         <>
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold">
-              Connected to: <span className="text-green-600">{databaseName}</span>
-            </h2>
-          </div>
-          <div>
-            <SchemaFlowVisualizer />
-          </div>
+          <SchemaFlowVisualizer />
         </>
       );
     }
@@ -111,8 +110,7 @@ export default function Home(): JSX.Element {
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar
-        onSubmit={handleConnect}
-        isLoading={isConnecting}
+        databaseName={databaseName}
         onFetchRelationships={handleFetchRelationships}
         isFetchingRelationships={isFetchingRelationships}
         isRelationshipsDisabled={!collections.length}
@@ -122,6 +120,35 @@ export default function Home(): JSX.Element {
         {(mongoError || relationshipError) && <ErrorMessage message={mongoError || relationshipError} />}
         {renderContent()}
       </main>
+
+      <Modal isOpen={isOpen} onClose={closeModal} title="">
+        <div className="space-y-6">
+          <div className="text-center">
+            <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+              <CircleStackIcon className="h-6 w-6 text-green-600" aria-hidden="true" />
+            </div>
+            <h2 className="mt-3 text-lg font-medium text-gray-900">Connect to Your MongoDB Database</h2>
+            <p className="mt-2 text-sm text-gray-500">
+              Enter your MongoDB connection details below. You can use a standard MongoDB URI or connect to a specific database.
+            </p>
+          </div>
+
+          <div className="mt-5">
+            <MongoDBConnectionForm onSubmit={handleConnect} isLoading={isConnecting} />
+          </div>
+
+          <div className="px-4 py-3 bg-gray-100 sm:px-6 sm:rounded-lg">
+            <div className="text-sm">
+              <h4 className="font-medium text-gray-900">Need help?</h4>
+              <ul className="mt-2 list-disc list-inside text-gray-500 space-y-1">
+                <li>Make sure your MongoDB server is running and accessible.</li>
+                <li>Double-check your connection string for any typos.</li>
+                <li>Ensure your IP address is whitelisted if using Atlas or a remote server.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

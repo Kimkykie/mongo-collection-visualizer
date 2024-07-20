@@ -10,7 +10,7 @@ interface MenuItem {
 }
 
 interface NavbarButtonProps {
-  icon: React.ReactNode;
+  icon?: React.ReactNode;
   label: string;
   onClick?: () => void;
   isLoading?: boolean;
@@ -37,7 +37,7 @@ export default function NavbarButton({
     gap-x-4 px-3 py-2 rounded-md
     text-sm
     ${primaryButton
-      ? 'bg-green-600 text-white hover:bg-green-700'
+      ? 'bg-green-400 text-black hover:bg-green-700 border border-gray-600'
       : 'bg-green-50 text-green-800 hover:bg-green-100 border-green-800 border'}
     shadow-sm
     transition-all duration-200 ease-in-out
