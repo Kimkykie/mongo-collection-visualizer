@@ -18,8 +18,7 @@ export function generatePrompt(schemas: PreprocessedSchema[]): string {
       "Include relationships between all collections in the provided schemas.",
       "Only include relationships that can be confidently inferred from the schema structures and field names.",
       "Exclude uncertain or speculative relationships.",
-      "IMPORTANT: Respond ONLY with a valid JSON array of relationship objects. Do not include any explanations, comments, or additional text outside of the JSON structure.",
-    ].join(" "),
+      "IMPORTANT: Respond ONLY with a valid JSON array of relationship objects. Do not include any explanations, comments, markdown formatting, or additional text outside of the JSON structure.",    ].join(" "),
     schemas,
     response_format: [
       {

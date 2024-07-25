@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     const prompt = generatePrompt(schemas);
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4",
+      model: "gpt-4o-mini",
       messages: [{ role: "user", content: prompt }],
       temperature: 0.2,
     });
@@ -33,7 +33,9 @@ export async function POST(req: NextRequest) {
     let relationships: Relationship[] = [];
     try {
       const content = completion.choices[0].message?.content || '[]';
-      const parsedContent = JSON.parse(content);
+      const cleanedContent = content.replace(/```json\s*/g, '').replace(/```\s*$/g, '');
+      const parsedContent = JSON.parse(cleanedContent);
+
       if (Array.isArray(parsedContent)) {
         relationships = parsedContent;
       } else {
