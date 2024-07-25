@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { Disclosure } from '@headlessui/react';
-import { FunnelIcon, EllipsisHorizontalCircleIcon, MoonIcon } from '@heroicons/react/24/outline';
-import MongoDBConnectionForm from '../MongoDBConnectionForm';
+import { PlusIcon, FunnelIcon, EllipsisHorizontalCircleIcon, MoonIcon } from '@heroicons/react/24/outline';
 import NavbarButton from './NavbarButton';
 
 interface NavbarProps {
   databaseName: string | null;
   onFetchRelationships: () => Promise<void>;
+  onNewConnection: () => void;
   isFetchingRelationships: boolean;
   isRelationshipsDisabled: boolean;
 }
@@ -18,6 +18,7 @@ export default function Navbar({
   onFetchRelationships,
   isFetchingRelationships,
   isRelationshipsDisabled,
+  onNewConnection,
 }: NavbarProps): JSX.Element {
   const handleManualMode = () => {
     console.log("Manual mode selected");
@@ -73,10 +74,15 @@ export default function Navbar({
           </div>
           {
             !isRelationshipsDisabled && (
-              <div className="flex items-center absolute right-0 top-20 space-x-2">
+              <div className="z-10 flex flex-col items-center absolute right-0 top-64 space-y-4">
                 <NavbarButton
                   icon={<FunnelIcon className="h-5 w-5" />}
                   label="Filter"
+                />
+                <NavbarButton
+                  icon={<PlusIcon className="h-5 w-5" />}
+                  label="New Connection"
+                  onClick={onNewConnection}
                 />
                 <NavbarButton
                   icon={<EllipsisHorizontalCircleIcon className="h-5 w-5" />}

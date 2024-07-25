@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase, disconnectFromDatabase } from './lib/databaseConnection';
 import { extractFieldTypes } from './lib/extractFieldTypes';
 import { DatabaseConnectionResult } from './types';
+import { logMongoDBError, processMongoDBError } from '@/app/utils/errorUtils';
 
 /**
  * Handles POST requests to connect to a MongoDB database and analyze its schema.
@@ -43,7 +44,9 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(result);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to connect to MongoDB' }, { status: 500 });
+    const errorResponse = processMongoDBError(error as Error);
+    logMongoDBError(error as Error, { route: 'POST /api/analyze-db' });
+    return NextResponse.json({ error: errorResponse }, { status: 500 });
   } finally {
     // Ensure database connection is closed after operation
     await disconnectFromDatabase();
