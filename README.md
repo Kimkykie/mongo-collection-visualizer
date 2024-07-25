@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# MongoSchemaViz
 
-## Getting Started
+MongoSchemaViz is an innovative tool designed to visualize MongoDB schemas and analyze their relationships. It provides a clear, interactive representation of your database structure, enhancing understanding and facilitating better database design decisions.
 
-First, run the development server:
+## 🌟 Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- **Schema Visualization**: Automatically generate visual representations of your MongoDB schemas.
+- **Relationship Analysis**: Infer and visualize relationships between collections, with optional AI-powered insights.
+- **Collection and Field Filtering**: Easily navigate through your data structure.
+- **Interactive UI**: User-friendly interface for exploring your MongoDB architecture.
+
+## 🧠 Why MongoSchemaViz?
+
+MongoDB's flexible schema design is powerful but can lead to challenges in understanding the overall data structure, especially in large, complex applications. MongoSchemaViz addresses this by:
+
+1. Automatically analyzing and visualizing your MongoDB collections.
+2. Inferring relationships between collections, even without explicit references.
+3. Providing a clear, visual representation of your data structure.
+
+This tool is invaluable for teams working on large-scale MongoDB projects, during codebase onboarding, or when planning data structure changes.
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (version 14 or later)
+- A MongoDB instance (local or remote)
+- OpenAI API key (optional, for enhanced relationship analysis)
+
+### Installation
+
+1. Clone the repository:
+```code
+https://github.com/Kimkykie/mongo-collection-visualizer.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Navigate to the project directory:
+```code
+cd MongoSchemaViz
+```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+3. Install dependencies:
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+npm install
+```
 
-## Learn More
+4. Create a `.env.local` file in the root directory and add your MongoDB URI and OpenAI API key (if using):
+```code
+MONGODB_URI=your_mongodb_uri_here
+OPENAI_API_KEY=your_api_key_here
+```
 
-To learn more about Next.js, take a look at the following resources:
+5. Run the development server:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```code
+npm run dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+6. Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-## Deploy on Vercel
+## 🛠️ Built With
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [Next.js 14](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [MongoDB](https://www.mongodb.com/)
+- [Mongoose](https://mongoosejs.com/)
+- [OpenAI API](https://openai.com/) (optional)
+- [Framer Motion](https://www.framer.com/motion/)
+- [React Flow](https://reactflow.dev/)
+- [Zustand](https://github.com/pmndrs/zustand)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Headless UI](https://headlessui.dev/)
+- [Hero Icons](https://heroicons.com/)
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## 📘 Usage
+
+1. Connect to your MongoDB instance using the connection string.
+2. MongoSchemaViz will automatically analyze your schemas and visualize the collections.
+3. Explore your data structure using the interactive visualization.
+4. Use the "Fetch Relationships" feature for additional insights (AI-powered if configured).
+5. Use filters to focus on specific collections or fields.
+
+## 🗺️ Roadmap
+
+- [ ] Implement filtering functionality for collections and fields
+- [ ] Add dark mode support
+- [ ] Develop a manual mode for relationship definition
+- [ ] Introduce data sampling for large collections
+- [ ] Add export functionality for visualizations
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+
+## 🙏 Acknowledgments
+
+- The MongoDB and Mongoose communities for inspiring this project
+- OpenAI for providing AI capabilities for enhanced  analysis
