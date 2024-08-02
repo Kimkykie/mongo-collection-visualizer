@@ -160,7 +160,7 @@ export default function Home(): JSX.Element {
       <main className="flex-grow flex flex-col mx-auto px-2 py-4 w-full">
       <AnimatePresence>
         {successMessage && (
-          <div className='w-1/3 mx-auto'>
+          <div className='w-1/3 mx-auto absolute top-2 right-0 z-20'>
             <SuccessMessage
               message={successMessage}
               onDismiss={() => setSuccessMessage(null)}

@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { Disclosure } from '@headlessui/react';
-import { PlusIcon, FunnelIcon, EllipsisHorizontalCircleIcon, MoonIcon } from '@heroicons/react/24/outline';
+import { FunnelIcon, EllipsisHorizontalCircleIcon, MoonIcon } from '@heroicons/react/24/outline';
 import NavbarButton from './NavbarButton';
+import { CircleStackIcon } from '@heroicons/react/24/solid';
 
 interface NavbarProps {
   databaseName: string | null;
@@ -80,7 +81,7 @@ export default function Navbar({
                   label="Filter"
                 />
                 <NavbarButton
-                  icon={<PlusIcon className="h-5 w-5" />}
+                  icon={<CircleStackIcon className="h-5 w-5" />}
                   label="New Connection"
                   onClick={onNewConnection}
                 />
