@@ -51,7 +51,7 @@ const SuccessMessage: React.FC<SuccessMessageProps> = ({
               onClick={() => setIsVisible(false)}
             >
               <XMarkIcon
-                className="h-4 w-4 text-green-700 font-semibold cursor-pointer"
+                className="h-4 w-4 text-green-700 font-extrabold cursor-pointer"
                 aria-label="Close"
               />
             </motion.button>

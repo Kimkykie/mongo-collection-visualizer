@@ -1,5 +1,5 @@
 // flow-container/nodes/CollectionNode.tsx
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Handle, Position } from 'reactflow';
 import { Field } from '../types/collections';
 
@@ -79,30 +79,62 @@ interface CollectionNodeProps {
     label: string;
     fields: Record<string, Field>;
   };
+  id: string; // Add this line to receive the node id
 }
 
-const CollectionNode: React.FC<CollectionNodeProps> = ({ data }) => {
+const CollectionNode: React.FC<CollectionNodeProps> = ({ data, id }) => {
+  const [fieldPositions, setFieldPositions] = useState<Record<string, number>>({});
+  const fieldsRef = useRef<Record<string, HTMLLIElement | null>>({});
+
+  useEffect(() => {
+    const measureFieldPositions = () => {
+      const newPositions: Record<string, number> = {};
+      Object.entries(fieldsRef.current).forEach(([field, element]) => {
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          newPositions[field] = rect.top + rect.height / 2;
+        }
+      });
+      setFieldPositions(newPositions);
+    };
+
+    measureFieldPositions();
+    window.addEventListener('resize', measureFieldPositions);
+
+    return () => {
+      window.removeEventListener('resize', measureFieldPositions);
+    };
+  }, [data.fields]);
+
   return (
     <div className='w-72'>
       <div className='bg-green-300 p-2 rounded-t-md text-center text-gray-700'>
         <p className='text-sm font-semibold'>{data.label}</p>
       </div>
-      <div className='overflow-y-auto nowheel max-h-96 border-2 border-gray-400 rounded-b-md'>
+      <div className='overflow-y-auto nowheel max-h-80 border border-gray-300 shadow-sm rounded-b-md'>
         <ul>
           {Object.entries(data.fields).map(([field, fieldValue]) => (
-            <li key={field} className='p-2 bg-slate-50'>
+            <li
+              key={`${id}-${field}`}
+              className='p-2 bg-slate-50 hover:bg-slate-300 relative'
+              ref={(el) => {
+                fieldsRef.current[field] = el;
+              }}
+            >
               <RenderField field={field} value={fieldValue} />
               <Handle
                 type="source"
                 position={Position.Right}
-                id={`${field}-right`}
-                className="w-16 !bg-teal-500"
+                id={`${id}-${field}-source`}
+                className="w-3 h-3 !bg-teal-500"
+                style={{ top: fieldPositions[field] ? `${fieldPositions[field]}px` : `${fieldPositions[field]}px` }}
               />
               <Handle
                 type="target"
                 position={Position.Left}
-                id={`${field}-left`}
-                className="w-16 !bg-teal-500"
+                id={`${id}-${field}-target`}
+                className="w-3 h-3 !bg-teal-500"
+                style={{ top: fieldPositions[field] ? `${fieldPositions[field]}px` : `${fieldPositions[field]}px` }}
               />
             </li>
           ))}
