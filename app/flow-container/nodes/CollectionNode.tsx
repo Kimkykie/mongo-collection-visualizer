@@ -84,7 +84,12 @@ interface CollectionNodeProps {
 
 const CollectionNode: React.FC<CollectionNodeProps> = ({ data, id }) => {
   const [fieldPositions, setFieldPositions] = useState<Record<string, number>>({});
+  const [isScrollable, setIsScrollable] = useState(false);
+  const [showTopGradient, setShowTopGradient] = useState(false);
   const fieldsRef = useRef<Record<string, HTMLLIElement | null>>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+
+
 
   useEffect(() => {
     const measureFieldPositions = () => {
@@ -96,6 +101,10 @@ const CollectionNode: React.FC<CollectionNodeProps> = ({ data, id }) => {
         }
       });
       setFieldPositions(newPositions);
+
+      if (containerRef.current) {
+        setIsScrollable(containerRef.current.scrollHeight > containerRef.current.clientHeight);
+      }
     };
 
     measureFieldPositions();
@@ -106,12 +115,20 @@ const CollectionNode: React.FC<CollectionNodeProps> = ({ data, id }) => {
     };
   }, [data.fields]);
 
+  const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    setShowTopGradient(e.currentTarget.scrollTop > 0);
+  };
+
   return (
-    <div className='w-72'>
+    <div className='w-72 relative'>
       <div className='bg-green-300 p-2 rounded-t-md text-center text-gray-700'>
         <p className='text-sm font-semibold'>{data.label}</p>
       </div>
-      <div className='overflow-y-auto nowheel max-h-80 border border-gray-300 shadow-sm rounded-b-md'>
+      <div
+        ref={containerRef}
+        className={`overflow-y-auto max-h-80 border border-gray-300 shadow-sm rounded-b-md ${isScrollable ? 'nowheel' : ''}`}
+        onScroll={handleScroll}
+      >
         <ul>
           {Object.entries(data.fields).map(([field, fieldValue]) => (
             <li
@@ -140,6 +157,12 @@ const CollectionNode: React.FC<CollectionNodeProps> = ({ data, id }) => {
           ))}
         </ul>
       </div>
+      {showTopGradient && (
+        <div className="absolute top-9 left-0 right-0 h-8 bg-gradient-to-b from-white via-slate-50 to-transparent pointer-events-none"></div>
+      )}
+      {isScrollable && (
+        <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-white via-slate-50 to-transparent pointer-events-none rounded-b-md"></div>
+      )}
     </div>
   );
 };
